@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta name="description" content="wanderson site responsivo.">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content=" convenios - Admin">
+    <meta property="og:title" content="Wanderson - Free Bootstrap 5 admin theme">
+    <title>Consulta de Convênios</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body class="app sidebar-mini">
+    <header class="app-header">
+      <a class="app-header__logo" href="index.html">Convênio - Taxi</a>
+      <a class="app-sidebar__toggle" href="#" data-toggle="sidebar" aria-label="Hide Sidebar"></a>
+      <ul class="app-nav">
+        </ul>
+    </header>
+    <div class="app-sidebar__overlay" data-toggle="sidebar"></div>
+    <aside class="app-sidebar">
+      <ul class="app-menu">
+        <li>
+          <a class="app-menu__item" href="index.html">
+            <i class="app-menu__icon bi bi-file-earmark-plus-fill"></i>
+            <span class="app-menu__label">Cadastrar Convênio</span>
+          </a>
+        </li>
+        <li>
+          <a class="app-menu__item active" href="resultados.html">
+            
+            <i class="app-menu__icon bi bi-search"></i>
+            <span class="app-menu__label">Consultar Resultados</span>
+          </a>
+        </li>
+      </ul>
+    </aside>
+
+    <main class="app-content">
+      <div class="app-title">
+        <div>
+          <h1><i class="bi bi-table"></i> Consulta de Registros</h1>
+          <p>Tabela de registros do convênio.</p>
+        </div>
+        <ul class="app-breadcrumb breadcrumb">
+          <li class="breadcrumb-item"><i class="bi bi-house-door fs-6" href="index.html"></i></li>
+          <li class="breadcrumb-item"><a href="index.html">Cadastro</a></li>
+        </ul>
+      </div>
+      
+      <div class="row">
+        <div class="col-md-12">
+          <div class="tile">
+            <h3 class="tile-title">Filtrar Registros</h3>
+            <div class="tile-body">
+              <form id="filtroForm" class="mb-4">
+                <div class="row g-3">
+                  <div class="col-md-4">
+                    <label for="motoristaFiltro" class="form-label">Motorista</label>
+                    <select class="form-select" id="motoristaFiltro">
+                      <option value="">Todos os Motoristas</option>
+                      <option value="Acassio">Acassio</option>
+                      <option value="Bode">Bode</option>
+                      <option value="Claudio">Claudio</option>
+                      <option value="Jean">Jean</option>
+                      <option value="Luan">Luan</option>
+                      <option value="Mendonça">Mendonça</option>
+                      <option value="Victor">Victor</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4">
+                    <label for="mesFiltro" class="form-label">Mês</label>
+                    <select class="form-select" id="mesFiltro">
+                      <option value="">Todos os Meses</option>
+                      <option value="01">Janeiro</option>
+                      <option value="02">Fevereiro</option>
+                      <option value="03">Março</option>
+                      <option value="04">Abril</option>
+                      <option value="05">Maio</option>
+                      <option value="06">Junho</option>
+                      <option value="07">Julho</option>
+                      <option value="08">Agosto</option>
+                      <option value="09">Setembro</option>
+                      <option value="10">Outubro</option>
+                      <option value="11">Novembro</option>
+                      <option value="12">Dezembro</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4">
+                    <label for="anoFiltro" class="form-label">Ano</label>
+                    <select class="form-select" id="anoFiltro"></select>
+                  </div>
+                </div>
+                <button type="submit" class="btn btn-primary mt-3 w-100">Pesquisar</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="row">
+        <div class="col-md-12">
+          <div class="tile">
+            <h3 class="tile-title">Resultados da Consulta</h3>
+            <div class="tile-body">
+              <div id="estatisticasFiltro" class="mb-4 text-center">
+                <h5 class="d-inline-block me-3">Total: <span id="totalFiltroSpan" class="fw-bold text-success">R$ 0,00</span></h5>
+                <h5 class="d-inline-block me-3">Média: <span id="mediaFiltroSpan" class="fw-bold text-info">R$ 0,00</span></h5>
+                <h5 class="d-inline-block">Registros: <span id="quantidadeFiltroSpan" class="fw-bold text-warning">0</span></h5>
+              </div>
+              <div class="table-responsive">
+                <table class="table table-striped table-bordered">
+                  <thead class="table-dark">
+                    <tr>
+                      <th scope="col">Motorista</th>
+                      <th scope="col">Valor</th>
+                      <th scope="col">Data</th>
+                    </tr>
+                  </thead>
+                  <tbody id="registrosFiltroTbody">
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+          <div class="tile">
+            <h3 class="tile-title">Resultados Individuais em Relação à Média</h3>
+            <div class="tile-body">
+                <div class="row" id="estatisticasIndividuaisList">
+                    </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+    <script src="js/jquery-3.7.0.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/main.js"></script>
+    <script src="resultados.js"></script>
+    
+  </body>
+</html>
