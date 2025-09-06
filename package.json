@@ -2,7 +2,8 @@
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^5.1.0",
-    "fs-extra": "^11.2.0"
+    "fs-extra": "^11.2.0",
+    "mongoose": "^8.18.0"
   },
   "name": "conveniotaxioficial",
   "version": "1.0.0",

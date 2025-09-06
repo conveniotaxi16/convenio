@@ -12,10 +12,13 @@ const anoFiltro = document.getElementById('anoFiltro');
 // Referência para o container dos cards de estatísticas
 const estatisticasIndividuaisList = document.getElementById('estatisticasIndividuaisList');
 
+// URL do seu servidor back-end. SUBSTITUA POR SUA URL REAL DO RENDER.
+const BACKEND_URL = 'https://YOUR_RENDER_URL.onrender.com';
+
 // Função para buscar e exibir os registros filtrados
 async function buscarRegistrosFiltrados(motorista, mesAno) {
     try {
-        let url = '/api/registros/filtro?';
+        let url = `${BACKEND_URL}/api/registros/filtro?`;
         const params = new URLSearchParams();
         if (motorista) {
             params.append('motorista', motorista);
@@ -55,7 +58,8 @@ async function buscarRegistrosFiltrados(motorista, mesAno) {
 // Nova função para buscar e exibir estatísticas individuais
 async function buscarEstatisticasIndividuais(mesAno) {
     try {
-        let url = '/api/estatisticas?';
+        // CORREÇÃO: A URL estava incorreta. Agora aponta para a rota correta do servidor.
+        let url = `${BACKEND_URL}/api/registros/estatisticas-individuais?`;
         const params = new URLSearchParams();
         if (mesAno) {
             params.append('mes', mesAno);
@@ -68,11 +72,11 @@ async function buscarEstatisticasIndividuais(mesAno) {
         estatisticasIndividuaisList.innerHTML = ''; // Limpa o conteúdo anterior
         
         data.estatisticas.forEach(estatistica => {
-            const diferencaFormatada = estatistica.diferenca.toFixed(2).replace('.', ',');
+            const diferencaFormatada = Math.abs(estatistica.diferenca).toFixed(2).replace('.', ',');
             const totalFormatado = estatistica.total.toFixed(2).replace('.', ',');
             const diferencaTexto = estatistica.diferenca >= 0 ? 
                 `+ R$ ${diferencaFormatada}` : 
-                `- R$ ${diferencaFormatada.substring(1)}`;
+                `- R$ ${diferencaFormatada}`;
             const diferencaClass = estatistica.diferenca >= 0 ? 'text-success' : 'text-danger';
 
             const cardHtml = `

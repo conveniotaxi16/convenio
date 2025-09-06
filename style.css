@@ -45,7 +45,37 @@ body {
     font-size: 1.1rem; /* Ajuste o tamanho da fonte do texto */
 }
 
-/* Pequeno ajuste para espaçamento entre os cards no layout de colunas */
-.row.estatisticas-cards > .col-md-6 {
-    padding-bottom: 15px; /* Adiciona um pequeno espaço entre as linhas de cards */
+/* Estilos para o Modal */
+.modal-container {
+    display: none; /* Oculto por padrão */
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: #fefefe;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 400px;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.modal-buttons {
+    margin-top: 20px;
+}
+
+.modal-buttons button {
+    margin: 0 5px;
+    min-width: 90px;
 }

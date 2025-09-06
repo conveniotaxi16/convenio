@@ -1,30 +1,32 @@
 const express = require('express');
 const path = require('path');
 const cors = require('cors');
-const fs = require('fs-extra');
+const mongoose = require('mongoose');
+
+// Substitua a string abaixo pela sua Connection String do MongoDB Atlas
+const MONGODB_URI = '<SUA_CONNECTION_STRING_AQUI>'; 
 
 const app = express();
 const port = process.env.PORT || 3000;
-const filePath = path.join(__dirname, 'registros.json');
 const motoristasFixos = ['Acassio', 'Bode', 'Claudio', 'Jean', 'Luan', 'Mendonça', 'Victor'];
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors());
 
-// Função para ler o arquivo de registros
-async function lerRegistros() {
-    if (await fs.pathExists(filePath)) {
-        const fileContent = await fs.readFile(filePath, 'utf-8');
-        try {
-            return JSON.parse(fileContent);
-        } catch (e) {
-            console.error('Erro ao fazer o parse do JSON:', e);
-            return [];
-        }
-    }
-    return [];
-}
+// Conexão com o MongoDB
+mongoose.connect(MONGODB_URI)
+  .then(() => console.log('Conectado ao MongoDB Atlas!'))
+  .catch(err => console.error('Erro de conexão ao MongoDB:', err));
+
+// Definição do Schema e do Model para os registros
+const registroSchema = new mongoose.Schema({
+    motorista: String,
+    valor: Number,
+    data_registro: { type: Date, default: Date.now }
+});
+
+const Registro = mongoose.model('Registro', registroSchema);
 
 // Rota para salvar um novo registro
 app.post('/api/registrar', async (req, res) => {
@@ -34,16 +36,9 @@ app.post('/api/registrar', async (req, res) => {
     }
 
     try {
-        const registros = await lerRegistros();
-        const novoRegistro = {
-            id: Date.now().toString(),
-            motorista,
-            valor: parseFloat(valor),
-            data_registro: new Date().toISOString()
-        };
-        registros.push(novoRegistro);
-        await fs.writeFile(filePath, JSON.stringify(registros, null, 2), 'utf-8');
-        res.status(200).send('Registro salvo com sucesso!');
+        const novoRegistro = new Registro({ motorista, valor: parseFloat(valor) });
+        await novoRegistro.save();
+        res.status(201).send('Registro salvo com sucesso!');
     } catch (error) {
         console.error('Erro ao salvar o registro:', error);
         res.status(500).send('Erro interno do servidor.');
@@ -53,107 +48,82 @@ app.post('/api/registrar', async (req, res) => {
 // Rota para buscar todos os registros
 app.get('/api/registros', async (req, res) => {
     try {
-        const registros = await lerRegistros();
-        const totalGeral = registros.reduce((sum, r) => sum + r.valor, 0);
-        const mediaGeral = totalGeral > 0 ? (totalGeral / 7) : 0;
-        const quantidadeRegistros = registros.length;
-        res.json({ registros, total: totalGeral, media: mediaGeral, quantidade: quantidadeRegistros });
+        const registros = await Registro.find().sort({ data_registro: -1 });
+        const total = registros.reduce((sum, reg) => sum + reg.valor, 0);
+        const media = registros.length > 0 ? total / registros.length : 0;
+        res.json({ registros, total, media, quantidade: registros.length });
     } catch (error) {
-        console.error('Erro ao buscar os registros:', error);
+        console.error('Erro ao buscar registros:', error);
         res.status(500).send('Erro interno do servidor.');
     }
 });
 
 // Rota para buscar registros filtrados
 app.get('/api/registros/filtro', async (req, res) => {
+    const { motorista, mes } = req.query;
+
+    let query = {};
+    if (motorista) {
+        query.motorista = motorista;
+    }
+    if (mes) {
+        const [ano, mesNumero] = mes.split('-');
+        const dataInicio = new Date(ano, mesNumero - 1, 1);
+        const dataFim = new Date(ano, mesNumero, 1);
+        query.data_registro = {
+            $gte: dataInicio,
+            $lt: dataFim
+        };
+    }
+
     try {
-        const { motorista, mes } = req.query;
-        const registros = await lerRegistros();
-        
-        let registrosFiltrados = registros;
+        const registros = await Registro.find(query).sort({ data_registro: -1 });
+        const total = registros.reduce((sum, reg) => sum + reg.valor, 0);
+        const media = registros.length > 0 ? total / registros.length : 0;
 
-        if (motorista) {
-            registrosFiltrados = registrosFiltrados.filter(reg => reg.motorista === motorista);
-        }
-        if (mes) {
-            registrosFiltrados = registrosFiltrados.filter(reg => {
-                const dataRegistro = new Date(reg.data_registro);
-                const mesAnoRegistro = `${dataRegistro.getFullYear()}-${(dataRegistro.getMonth() + 1).toString().padStart(2, '0')}`;
-                return mesAnoRegistro === mes;
-            });
-        }
-        
-        const totalFiltro = registrosFiltrados.reduce((sum, r) => sum + r.valor, 0);
-        const mediaFiltro = totalFiltro > 0 ? (totalFiltro / 7) : 0;
-        const quantidadeFiltro = registrosFiltrados.length;
-        
-        res.json({ registros: registrosFiltrados, total: totalFiltro, media: mediaFiltro, quantidade: quantidadeFiltro });
-
+        res.json({ registros, total, media, quantidade: registros.length });
     } catch (error) {
-        console.error('Erro ao buscar os registros filtrados:', error);
+        console.error('Erro ao buscar registros filtrados:', error);
         res.status(500).send('Erro interno do servidor.');
     }
 });
 
-// Rota para buscar estatísticas
-app.get('/api/estatisticas', async (req, res) => {
+// Rota para buscar estatísticas por motorista
+app.get('/api/registros/estatisticas-individuais', async (req, res) => {
+    const { mes } = req.query;
+    
+    let matchQuery = {};
+    if (mes) {
+        const [ano, mesNumero] = mes.split('-');
+        const dataInicio = new Date(ano, mesNumero - 1, 1);
+        const dataFim = new Date(ano, mesNumero, 1);
+        matchQuery.data_registro = {
+            $gte: dataInicio,
+            $lt: dataFim
+        };
+    }
+
     try {
-        const { mes } = req.query;
-        let registros = await lerRegistros();
-
-        if (mes) {
-            registros = registros.filter(reg => {
-                const dataRegistro = new Date(reg.data_registro);
-                const mesAnoRegistro = `${dataRegistro.getFullYear()}-${(dataRegistro.getMonth() + 1).toString().padStart(2, '0')}`;
-                return mesAnoRegistro === mes;
-            });
-        }
-
-        const totalGeral = registros.reduce((sum, r) => sum + r.valor, 0);
-        const mediaGeral = totalGeral > 0 ? (totalGeral / motoristasFixos.length) : 0;
+        const mediaGeralAgregation = await Registro.aggregate([
+            { $match: matchQuery },
+            { $group: { _id: null, total: { $sum: '$valor' } } }
+        ]);
         
-        const estatisticasPorMotorista = motoristasFixos.map(motoristaNome => {
-            const total = registros.filter(r => r.motorista === motoristaNome).reduce((sum, r) => sum + r.valor, 0);
-            const diferenca = total - mediaGeral;
+        const mediaGeral = mediaGeralAgregation.length > 0 ? mediaGeralAgregation[0].total / await Registro.countDocuments(matchQuery) : 0;
+
+        const estatisticasPorMotorista = await Registro.aggregate([
+            { $match: matchQuery },
+            { $group: { _id: '$motorista', total: { $sum: '$valor' } } },
+            { $addFields: { diferenca: { $subtract: ['$total', mediaGeral] } } }
+        ]);
+
+        const estatisticasFinal = motoristasFixos.map(motoristaNome => {
+            const stats = estatisticasPorMotorista.find(s => s._id === motoristaNome);
             return {
                 motorista: motoristaNome,
-                total: total,
-                diferenca: diferenca
+                total: stats ? stats.total : 0,
+                diferenca: stats ? stats.diferenca : -mediaGeral
             };
         });
-        
-        res.json({ estatisticas: estatisticasPorMotorista, mediaGeral });
 
-    } catch (error) {
-        console.error('Erro ao buscar estatísticas:', error);
-        res.status(500).send('Erro interno do servidor.');
-    }
-});
-
-// Rota para remover um registro
-app.delete('/api/remover', async (req, res) => {
-    const { id } = req.body;
-    if (!id) {
-        return res.status(400).send('ID do registro é obrigatório.');
-    }
-    
-    try {
-        let registros = await lerRegistros();
-        const registrosAtualizados = registros.filter(reg => reg.id !== id);
-        
-        if (registros.length === registrosAtualizados.length) {
-            return res.status(404).send('Registro não encontrado.');
-        }
-
-        await fs.writeFile(filePath, JSON.stringify(registrosAtualizados, null, 2), 'utf-8');
-        res.status(200).send('Registro removido com sucesso!');
-
-    } catch (error) {
-        console.error('Erro ao remover o registro:', error);
-        res.status(500).send('Erro interno do servidor.');
-    }
-});
-
-app.listen(port, () => {
-    console.log(`Servidor rodando em http://localhost:${port}`);
-});
+        res.json({ estatisticas: estat
