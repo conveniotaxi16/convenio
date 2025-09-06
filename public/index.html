@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta name="description" content="wanderson site responsivo.">
+    <!-- Open Graph Meta-->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content=" convenios - Admin">
+    <meta property="og:title" content="Wanderson - Free Bootstrap 5 admin theme">
+    <title>Registros de Convênios</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Main CSS-->
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+    <!-- Font-icon css-->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+  </head>
+  <body class="app sidebar-mini">
+    <!-- Navbar-->
+    <header class="app-header"><a class="app-header__logo" href="index.html">Convênio - Taxi</a>
+      <!-- Sidebar toggle button--><a class="app-sidebar__toggle" href="#" data-toggle="sidebar" aria-label="Hide Sidebar"></a>
+      
+        
+      </ul>
+    </header>
+    <!-- Sidebar menu-->
+    <div class="app-sidebar__overlay" data-toggle="sidebar"></div>
+    <aside class="app-sidebar">
+      
+      <ul class="app-menu">
+        <li><a class="app-menu__item active" href="resultados.html"><i class="app-menu__icon bi bi-speedometer"></i><span class="app-menu__label">Consultar</span></a></li>
+       
+        <li><a class="app-menu__item active" href="index.html"><i class="app-menu__icon bi bi-ui-checks"></i><span class="app-menu__label">Cadastro</span></a></li>
+          
+    </aside>
+    <main class="app-content">
+      <div class="app-title">
+        <div>
+          <h1><i class="bi bi-speedometer"></i> Cadastrar corridas </h1>
+          <p>Convênio</p>
+        </div>
+        <ul class="app-breadcrumb breadcrumb">
+          <li class="breadcrumb-item"><i class="bi bi-house-door fs-6" href="resultados.html"></i></li>
+          <li class="breadcrumb-item"><a href="resultados.html">Consulta</a></li>
+        </ul>
+      </div>
+      <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white text-center">
+                        <h2>Registros ddo Convênio</h2>
+                    </div>
+                    <div class="card-body">
+                        <form id="registroForm" class="mb-4">
+                            <div class="mb-3">
+                                <label for="motoristaSelect" class="form-label">Selecione o Motorista</label>
+                                <select class="form-select" id="motoristaSelect" required>
+                                    <option value="" disabled selected>Selecione um nome</option>
+                                    <option value="Acassio">Acassio</option>
+                                    <option value="Bode">Bode</option>
+                                    <option value="Claudio">Claudio</option>
+                                    <option value="Jean">Jean</option>
+                                    <option value="Luan">Luan</option>
+                                    <option value="Mendonça">Mendonça</option>
+                                    <option value="Victor">Victor</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="valorInput" class="form-label">Valor (R$)</label>
+                                <input type="number" step="0.01" class="form-control" id="valorInput" placeholder="Ex: 50.00" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Cadastrar Valor</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card mt-4 shadow-sm">
+                    <div class="card-header bg-success text-white text-center">
+                        <h4>Registros Cadastrados</h4>
+                    </div>
+                    <div class="card-body">
+                        <div id="estatisticas" class="mb-4 text-center">
+                            <h5 class="d-inline-block me-3">Total: <span id="totalSpan" class="fw-bold text-success">R$ 0,00</span></h5>
+                            <h5 class="d-inline-block me-3">Média: <span id="mediaSpan" class="fw-bold text-info">R$ 0,00</span></h5>
+                            <h5 class="d-inline-block">Registros: <span id="quantidadeSpan" class="fw-bold text-warning">0</span></h5>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-striped table-bordered">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th scope="col">Motorista</th>
+                                        <th scope="col">Valor</th>
+                                        <th scope="col">Data</th>
+                                        <th scope="col">Ações</th> </tr>
+                                </thead>
+                                <tbody id="registrosTbody">
+                                    </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="script.js"></script>
+    </main>
+    <!-- Essential javascripts for application to work-->
+    <script src="js/jquery-3.7.0.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/main.js"></script>
+    <!-- Page specific javascripts-->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <script type="text/javascript">
+      const salesData = {
+      	xAxis: {
+      		type: 'category',
+      		data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+      	},
+      	yAxis: {
+      		type: 'value',
+      		axisLabel: {
+      			formatter: '${value}'
+      		}
+      	},
+      	series: [
+      		{
+      			data: [150, 230, 224, 218, 135, 147, 260],
+      			type: 'line',
+      			smooth: true
+      		}
+      	],
+      	tooltip: {
+      		trigger: 'axis',
+      		formatter: "<b>{b0}:</b> ${c0}"
+      	}
+      }
+      
+      const supportRequests = {
+      	tooltip: {
+      		trigger: 'item'
+      	},
+      	legend: {
+      		orient: 'vertical',
+      		left: 'left'
+      	},
+      	series: [
+      		{
+      			name: 'Support Requests',
+      			type: 'pie',
+      			radius: '50%',
+      			data: [
+      				{ value: 300, name: 'In Progress' },
+      				{ value: 50, name: 'Delayed' },
+      				{ value: 100, name: 'Complete' }
+      			],
+      			emphasis: {
+      				itemStyle: {
+      					shadowBlur: 10,
+      					shadowOffsetX: 0,
+      					shadowColor: 'rgba(0, 0, 0, 0.5)'
+      				}
+      			}
+      		}
+      	]
+      };
+      
+      const salesChartElement = document.getElementById('salesChart');
+      const salesChart = echarts.init(salesChartElement, null, { renderer: 'svg' });
+      salesChart.setOption(salesData);
+      new ResizeObserver(() => salesChart.resize()).observe(salesChartElement);
+      
+      const supportChartElement = document.getElementById("supportRequestChart")
+      const supportChart = echarts.init(supportChartElement, null, { renderer: 'svg' });
+      supportChart.setOption(supportRequests);
+      new ResizeObserver(() => supportChart.resize()).observe(supportChartElement);
+    </script>
+    <!-- Google analytics script-->
+    <script type="text/javascript">
+      if(document.location.hostname == 'pratikborsadiya.in') {
+      	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      	})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+      	ga('create', 'UA-72504830-1', 'auto');
+      	ga('send', 'pageview');
+      }
+    </script>
+  </body>
+</html>
